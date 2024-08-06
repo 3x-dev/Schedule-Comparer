@@ -1,10 +1,10 @@
+import os
+import json
+import base64
 from flask import render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from app import app, db
 from app.schedules import Schedule
-import os
-import json
-import base64
 from openai import OpenAI
 import time
 
@@ -74,37 +74,41 @@ def index():
 
 @app.route('/verify', methods=['POST'])
 def verify():
-    if 'scheduleImage' not in request.files:
-        return 'No file part', 400
+    try:
+        if 'scheduleImage' not in request.files:
+            return 'No file part', 400
 
-    file = request.files['scheduleImage']
-    if file.filename == '':
-        return 'No selected file', 400
+        file = request.files['scheduleImage']
+        if file.filename == '':
+            return 'No selected file', 400
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            filepath = os.path.join('/tmp', filename)  # Use /tmp directory
+            file.save(filepath)
 
-        schema = load_json_schema('schedule_schema.json')
-        for attempt in range(3):
-            try:
-                schedule = get_gpt_response(filepath, schema)
-                break
-            except Exception as e:
-                if attempt < 2:
-                    print(f"GPT API call failed, retrying... (Attempt {attempt + 1})")
-                else:
-                    return 'Failed to process the image. Please ensure it is a correct schedule image and try again.', 500
+            schema = load_json_schema('schedule_schema.json')
+            for attempt in range(3):
+                try:
+                    schedule = get_gpt_response(filepath, schema)
+                    break
+                except Exception as e:
+                    if attempt < 2:
+                        print(f"GPT API call failed, retrying... (Attempt {attempt + 1})")
+                    else:
+                        return 'Failed to process the image. Please ensure it is a correct schedule image and try again.', 500
 
-        schedule['studentName'] = request.form['name']
-        schedule['grade'] = request.form['grade']
+            schedule['studentName'] = request.form['name']
+            schedule['grade'] = request.form['grade']
 
-        formatted_schedule = json.dumps(schedule)
+            formatted_schedule = json.dumps(schedule)
 
-        return render_template('verify.html', schedule=schedule, formatted_schedule=formatted_schedule)
+            return render_template('verify.html', schedule=schedule, formatted_schedule=formatted_schedule)
 
-    return 'File not allowed', 400
+        return 'File not allowed', 400
+    except Exception as e:
+        print(f"An error occurred during verification: {e}")
+        return 'Internal Server Error', 500
 
 @app.route('/confirm', methods=['POST'])
 def confirm():
