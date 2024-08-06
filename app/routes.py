@@ -46,7 +46,7 @@ def get_gpt_response(image_path, schema, retries=3):
     for attempt in range(retries):
         try:
             response = client.chat.completions.create(
-                model='gpt-4o-mini',
+                model='gpt-4o',
                 response_format={"type": "json_object"},
                 messages=[
                     {
@@ -75,8 +75,8 @@ def get_gpt_response(image_path, schema, retries=3):
                 raise
     raise Exception("Maximum retry attempts reached")
 
-def generate_color(index):
-    return PASTEL_COLORS[index % len(PASTEL_COLORS)]
+def generate_new_color():
+    return PASTEL_COLORS[len(shared_classes) % len(PASTEL_COLORS)]
 
 @app.route('/')
 def index():
@@ -138,21 +138,41 @@ def schedules():
 
     # Create a dictionary to track shared classes
     shared_classes = {}
-    index_counter = 0
+    
+    def generate_new_color():
+        return PASTEL_COLORS[len(shared_classes) % len(PASTEL_COLORS)]
     
     for schedule in all_schedules:
         schedule_data = json.loads(schedule.schedule)
         for period, entry in schedule_data['semester1'].items():
-            key = f"{entry['class']}_{period}"
+            key = f"{entry['class']}_{entry['teacher']}_{period}"
             if key not in shared_classes:
-                shared_classes[key] = generate_color(index_counter)
-                index_counter += 1
+                # Check if the class and teacher combination is already present in any period
+                color_found = None
+                for existing_key in shared_classes.keys():
+                    if entry['class'] in existing_key and entry['teacher'] in existing_key:
+                        color_found = shared_classes[existing_key]
+                        break
+                
+                if color_found:
+                    shared_classes[key] = color_found
+                else:
+                    shared_classes[key] = generate_new_color()
 
         for period, entry in schedule_data['semester2'].items():
-            key = f"{entry['class']}_{period}"
+            key = f"{entry['class']}_{entry['teacher']}_{period}"
             if key not in shared_classes:
-                shared_classes[key] = generate_color(index_counter)
-                index_counter += 1
+                # Check if the class and teacher combination is already present in any period
+                color_found = None
+                for existing_key in shared_classes.keys():
+                    if entry['class'] in existing_key and entry['teacher'] in existing_key:
+                        color_found = shared_classes[existing_key]
+                        break
+                
+                if color_found:
+                    shared_classes[key] = color_found
+                else:
+                    shared_classes[key] = generate_new_color()
 
     schedules_list = [
         {
