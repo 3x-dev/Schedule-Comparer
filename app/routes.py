@@ -7,7 +7,6 @@ from app import app, db
 from app.schedules import Schedule
 from openai import OpenAI
 import time
-import boto3
 import logging
 
 # Configure logging
@@ -17,10 +16,6 @@ logger = logging.getLogger(__name__)
 # OpenAI API key
 openai_api_key = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=openai_api_key)
-
-# AWS S3 configuration
-s3 = boto3.client('s3')
-BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 
 PASTEL_COLORS = [
     "#FFB3BA",  # light red
@@ -75,7 +70,7 @@ def get_gpt_response(image_path, schema, retries=3):
                 raise
     raise Exception("Maximum retry attempts reached")
 
-def generate_new_color():
+def generate_new_color(shared_classes):
     return PASTEL_COLORS[len(shared_classes) % len(PASTEL_COLORS)]
 
 @app.route('/')
@@ -139,9 +134,6 @@ def schedules():
     # Create a dictionary to track shared classes
     shared_classes = {}
     
-    def generate_new_color():
-        return PASTEL_COLORS[len(shared_classes) % len(PASTEL_COLORS)]
-    
     for schedule in all_schedules:
         schedule_data = json.loads(schedule.schedule)
         for period, entry in schedule_data['semester1'].items():
@@ -157,7 +149,7 @@ def schedules():
                 if color_found:
                     shared_classes[key] = color_found
                 else:
-                    shared_classes[key] = generate_new_color()
+                    shared_classes[key] = generate_new_color(shared_classes)
 
         for period, entry in schedule_data['semester2'].items():
             key = f"{entry['class']}_{entry['teacher']}_{period}"
@@ -172,7 +164,7 @@ def schedules():
                 if color_found:
                     shared_classes[key] = color_found
                 else:
-                    shared_classes[key] = generate_new_color()
+                    shared_classes[key] = generate_new_color(shared_classes)
 
     schedules_list = [
         {

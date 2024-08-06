@@ -5,15 +5,16 @@ from flask_migrate import Migrate
 from dotenv import load_dotenv
 import os
 import logging
+import tempfile
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config.from_object(Config)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Use a temporary directory for uploads
+app.config['UPLOAD_FOLDER'] = tempfile.mkdtemp()
+app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
