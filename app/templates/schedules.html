@@ -30,21 +30,21 @@
         <tbody>
             {% for row in range(10) %}
             <tr>
-                {% set monday_periods = ['Period 1', 'Period 2', 'Tutorial', 'Period 3', 'Brunch', 'Period 4', 'Period 5', 'Lunch', 'Period 6', 'Period 7'] %}
-                {% set tuesday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
-                {% set wednesday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
-                {% set thursday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
-                {% set friday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
+                {% set monday_periods = ['period1', 'period2', 'tutorial', 'period3', 'brunch', 'period4', 'period5', 'lunch', 'period6', 'period7'] %}
+                {% set tuesday_periods = ['period1', 'period2', 'brunch', 'period3', 'lunch', 'period7'] %}
+                {% set wednesday_periods = ['period4', 'tutorial', 'brunch', 'period5', 'lunch', 'period6'] %}
+                {% set thursday_periods = ['period1', 'period2', 'brunch', 'period3', 'lunch', 'period7'] %}
+                {% set friday_periods = ['period4', 'tutorial', 'brunch', 'period5', 'lunch', 'period6'] %}
 
                 {% for day, periods in [('Monday', monday_periods), ('Tuesday', tuesday_periods), ('Wednesday', wednesday_periods), ('Thursday', thursday_periods), ('Friday', friday_periods)] %}
                 <td>
                     {% if row < periods|length %}
-                        <strong>{{ periods[row] }}</strong>
+                        <strong>{{ periods[row].capitalize().replace('_', ' ') }}</strong>
                     {% endif %}
                 </td>
                 <td>
                     {% if row < periods|length %}
-                        {% set period = periods[row].lower().replace(' ', '') %}
+                        {% set period = periods[row] %}
                         {% for schedule in schedules %}
                             {% set entry = schedule.schedule.semester1[period] %}
                             {% if entry %}
@@ -95,21 +95,21 @@
         <tbody>
             {% for row in range(10) %}
             <tr>
-                {% set monday_periods = ['Period 1', 'Period 2', 'Tutorial', 'Period 3', 'Brunch', 'Period 4', 'Period 5', 'Lunch', 'Period 6', 'Period 7'] %}
-                {% set tuesday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
-                {% set wednesday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
-                {% set thursday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
-                {% set friday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
+                {% set monday_periods = ['period1', 'period2', 'tutorial', 'period3', 'brunch', 'period4', 'period5', 'lunch', 'period6', 'period7'] %}
+                {% set tuesday_periods = ['period1', 'period2', 'brunch', 'period3', 'lunch', 'period7'] %}
+                {% set wednesday_periods = ['period4', 'tutorial', 'brunch', 'period5', 'lunch', 'period6'] %}
+                {% set thursday_periods = ['period1', 'period2', 'brunch', 'period3', 'lunch', 'period7'] %}
+                {% set friday_periods = ['period4', 'tutorial', 'brunch', 'period5', 'lunch', 'period6'] %}
 
                 {% for day, periods in [('Monday', monday_periods), ('Tuesday', tuesday_periods), ('Wednesday', wednesday_periods), ('Thursday', thursday_periods), ('Friday', friday_periods)] %}
                 <td>
                     {% if row < periods|length %}
-                        <strong>{{ periods[row] }}</strong>
+                        <strong>{{ periods[row].capitalize().replace('_', ' ') }}</strong>
                     {% endif %}
                 </td>
                 <td>
                     {% if row < periods|length %}
-                        {% set period = periods[row].lower().replace(' ', '') %}
+                        {% set period = periods[row] %}
                         {% for schedule in schedules %}
                             {% set entry = schedule.schedule.semester2[period] %}
                             {% if entry %}
