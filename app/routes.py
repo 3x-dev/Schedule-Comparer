@@ -7,10 +7,6 @@ import json
 import base64
 from openai import OpenAI
 import time
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
 
 # OpenAI API key
 openai_api_key = os.getenv('OPENAI_API_KEY')
@@ -29,7 +25,8 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 def load_json_schema(schema_file: str) -> dict:
-    with open(schema_file, 'r') as file:
+    schema_path = os.path.join(os.path.dirname(__file__), schema_file)
+    with open(schema_path, 'r') as file:
         return json.load(file)
 
 def get_gpt_response(image_path, schema, retries=3):
