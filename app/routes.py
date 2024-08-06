@@ -7,10 +7,20 @@ from app import app, db
 from app.schedules import Schedule
 from openai import OpenAI
 import time
+import boto3
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # OpenAI API key
 openai_api_key = os.getenv('OPENAI_API_KEY')
 client = OpenAI(api_key=openai_api_key)
+
+# AWS S3 configuration
+s3 = boto3.client('s3')
+BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
 
 PASTEL_COLORS = [
     "#FFB3BA",  # light red
@@ -58,7 +68,7 @@ def get_gpt_response(image_path, schema, retries=3):
 
             return json.loads(response.choices[0].message.content)
         except (json.JSONDecodeError, Exception) as e:
-            print(f"Attempt {attempt + 1} failed: {e}")
+            logger.error(f"Attempt {attempt + 1} failed: {e}")
             if attempt < retries - 1:
                 time.sleep(2)  # wait before retrying
             else:
@@ -75,6 +85,7 @@ def index():
 @app.route('/verify', methods=['POST'])
 def verify():
     try:
+        start_time = time.time()
         if 'scheduleImage' not in request.files:
             return 'No file part', 400
 
@@ -93,21 +104,20 @@ def verify():
                     schedule = get_gpt_response(filepath, schema)
                     break
                 except Exception as e:
-                    if attempt < 2:
-                        print(f"GPT API call failed, retrying... (Attempt {attempt + 1})")
-                    else:
+                    logger.error(f"GPT API call failed, retrying... (Attempt {attempt + 1}): {e}")
+                    if attempt == 2:
                         return 'Failed to process the image. Please ensure it is a correct schedule image and try again.', 500
 
             schedule['studentName'] = request.form['name']
             schedule['grade'] = request.form['grade']
 
             formatted_schedule = json.dumps(schedule)
-
+            logger.info(f"Verification completed in {time.time() - start_time} seconds")
             return render_template('verify.html', schedule=schedule, formatted_schedule=formatted_schedule)
 
         return 'File not allowed', 400
     except Exception as e:
-        print(f"An error occurred during verification: {e}")
+        logger.error(f"An error occurred during verification: {e}")
         return 'Internal Server Error', 500
 
 @app.route('/confirm', methods=['POST'])
