@@ -46,7 +46,7 @@ def get_gpt_response(image_path, schema, retries=3):
     for attempt in range(retries):
         try:
             response = client.chat.completions.create(
-                model='gpt-4o',
+                model='gpt-4o-mini',
                 response_format={"type": "json_object"},
                 messages=[
                     {
