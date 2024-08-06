@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center my-4"><strong>All Student Schedules</strong></h1>
+
+<h2 class="my-4"><strong>Semester 1</strong></h2>
+<div class="table-responsive">
+    <table class="table table-bordered text-center" style="border-collapse: collapse; width: 100%;">
+        <thead class="thead-dark">
+            <tr>
+                <th colspan="2"><strong>Monday</strong></th>
+                <th colspan="2"><strong>Tuesday</strong></th>
+                <th colspan="2"><strong>Wednesday</strong></th>
+                <th colspan="2"><strong>Thursday</strong></th>
+                <th colspan="2"><strong>Friday</strong></th>
+            </tr>
+            <tr>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in range(10) %}
+            <tr>
+                {% set monday_periods = ['Period 1', 'Period 2', 'Tutorial', 'Period 3', 'Brunch', 'Period 4', 'Period 5', 'Lunch', 'Period 6', 'Period 7'] %}
+                {% set tuesday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
+                {% set wednesday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
+                {% set thursday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
+                {% set friday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
+
+                {% for day, periods in [('Monday', monday_periods), ('Tuesday', tuesday_periods), ('Wednesday', wednesday_periods), ('Thursday', thursday_periods), ('Friday', friday_periods)] %}
+                <td>
+                    {% if row < periods|length %}
+                        <strong>{{ periods[row] }}</strong>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if row < periods|length %}
+                        {% set period = periods[row].lower().replace(' ', '') %}
+                        {% for schedule in schedules %}
+                            {% set entry = schedule.schedule.semester1[period] %}
+                            {% if entry %}
+                                {% set color_key = entry.class ~ '_' ~ period %}
+                                <div class="schedule-entry" data-toggle="tooltip" title="{{ schedule.name }} - {{ entry.class }}" style="background-color: {{ schedule.colors[color_key] }};">
+                                    <strong>{{ entry.class }}</strong><br>
+                                    <span>{{ entry.teacher }}</span><br>
+                                    <em>{{ schedule.name }}</em><br>
+                                    <small>{{ schedule.grade }}</small>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<br><br>
+
+<h2 class="my-4"><strong>Semester 2</strong></h2>
+<div class="table-responsive">
+    <table class="table table-bordered text-center" style="border-collapse: collapse; width: 100%;">
+        <thead class="thead-dark">
+            <tr>
+                <th colspan="2"><strong>Monday</strong></th>
+                <th colspan="2"><strong>Tuesday</strong></th>
+                <th colspan="2"><strong>Wednesday</strong></th>
+                <th colspan="2"><strong>Thursday</strong></th>
+                <th colspan="2"><strong>Friday</strong></th>
+            </tr>
+            <tr>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+                <th><strong>Period</strong></th>
+                <th><strong>Student Entries</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in range(10) %}
+            <tr>
+                {% set monday_periods = ['Period 1', 'Period 2', 'Tutorial', 'Period 3', 'Brunch', 'Period 4', 'Period 5', 'Lunch', 'Period 6', 'Period 7'] %}
+                {% set tuesday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
+                {% set wednesday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
+                {% set thursday_periods = ['Period 1', 'Period 2', 'Brunch', 'Period 3', 'Lunch', 'Period 7'] %}
+                {% set friday_periods = ['Period 4', 'Tutorial', 'Brunch', 'Period 5', 'Lunch', 'Period 6'] %}
+
+                {% for day, periods in [('Monday', monday_periods), ('Tuesday', tuesday_periods), ('Wednesday', wednesday_periods), ('Thursday', thursday_periods), ('Friday', friday_periods)] %}
+                <td>
+                    {% if row < periods|length %}
+                        <strong>{{ periods[row] }}</strong>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if row < periods|length %}
+                        {% set period = periods[row].lower().replace(' ', '') %}
+                        {% for schedule in schedules %}
+                            {% set entry = schedule.schedule.semester2[period] %}
+                            {% if entry %}
+                                {% set color_key = entry.class ~ '_' ~ period %}
+                                <div class="schedule-entry" data-toggle="tooltip" title="{{ schedule.name }} - {{ entry.class }}" style="background-color: {{ schedule.colors[color_key] }};">
+                                    <strong>{{ entry.class }}</strong><br>
+                                    <span>{{ entry.teacher }}</span><br>
+                                    <em>{{ schedule.name }}</em><br>
+                                    <small>{{ schedule.grade }}</small>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .schedule-entry {
+        margin-bottom: 10px;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        color: #000;
+    }
+</style>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+{% endblock %}
